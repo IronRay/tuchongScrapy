@@ -25,14 +25,14 @@ def getAlbumData(userID, albumID):
     return response
 
 
-def getPicData(url):
+def get(url, params=''):
     HEADER = {
         'User-Agent': random.choice(USER_AGENTS),
     }
 
     headers = HEADER
 
-    response = requests.get(url=url, headers=headers, timeout=10)
+    response = requests.get(url=url, headers=headers, params=params, timeout=10)
 
     return response
 
