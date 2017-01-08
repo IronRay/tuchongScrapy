@@ -20,7 +20,6 @@ def getAlbumData(userID, albumID):
     url = baseUrl + str(userID) + '/' + str(albumID)
 
     response = requests.get(url=url, headers=headers, timeout=10)
-    # print(response.status_code)
 
     return response
 

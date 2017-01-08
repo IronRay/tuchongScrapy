@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-import time
+from time import localtime
 import json
 
 from bs4 import BeautifulSoup
@@ -30,76 +30,60 @@ class Author():
 
         return authorContent
 
-    def getAuthorAlbumIDsByJson(self, year, month, day, limit=20):
+    def getAuthorInfo():
+        pass
+
+    def getAuthorAlbumIDsByJson(self, time, limit=20):
         baseUrl = 'https://tuchong.com/rest/sites/'
         params = {
             'limit': limit
         }
 
-        url = baseUrl + self.id + '/posts/' + str(year) + '-' + str(month) + '-' + str(day)
+        url = baseUrl + self.id + '/posts/' + time
+        print(url)
 
         authorData = tuchongGet.get(url=url, params=params)
         dataDict = json.loads(authorData.text)
 
         if dataDict['posts']:
             for post in dataDict['posts']:
-                self.albumIDs.append(post['post_id'])
+                if post['post_id'] not in self.albumIDs:
+                    self.albumIDs.append(post['post_id'])
 
-            nextYear = dataDict['posts'][-1]['published_at'].split('-')[0]
-            nextMonth = dataDict['posts'][-1]['published_at'].split('-')[1]
-            nextDay = dataDict['posts'][-1]['published_at'].split('-')[2]
+            time = dataDict['posts'][-1]['published_at']
 
             nextJson = {
-                'year': nextYear,
-                'month': nextMonth,
-                'day': nextDay,
-                'status': 1
+                'time': time,
+                'status': 1,
+                'len': len(dataDict['posts'])
             }
 
             return nextJson
         else:
             nextJson = {
-                'year': 0,
-                'month': 0,
-                'nextday': 0,
-                'status': 0
+                'time': 0,
+                'status': 0,
+                'len': 0
             }
 
             return nextJson
-
-    def getAuthorAlbumIDsByPageContent(self, year, month):
-        baseUrl = self.url
-        url = baseUrl + '/' + 'posts/' + str(year) + '-' + str(month)
-
-        authorData = tuchongGet.get(url=url)
-        authorContent = BeautifulSoup(authorData.text, 'lxml')
-
-        soups = authorContent.findAll('div', {'class': 'post-collage'})
-
-        if soups:
-            for soup in soups:
-                self.albumIDs.append(soup.get('data-post-id'))
-
-            return 1
-        else:
-            return 0
 
     def getAllAlbumIDs(self, mode='json'):
-        now = time.localtime()
+        now = localtime()
         year = now.tm_year
         month = now.tm_mon
-        day = now.tm_mday
+        day = now.tm_mday + 2
+
+        time = '%s-%s-%s 00:00:00' % (year, month, day)
 
         if mode == 'json':
             while 1:
-                nextJson = self.getAuthorAlbumIDsByJson(year=year, month=month, day=day, limit=50)
+                nextJson = self.getAuthorAlbumIDsByJson(time=time, limit=20)
 
                 print(nextJson)
 
                 if nextJson['status']:
-                    year = nextJson['year']
-                    month = nextJson['month']
-                    day = nextJson['day']
+                    time = nextJson['time']
                 else:
                     break
 
@@ -266,12 +250,3 @@ if __name__ == '__main__':
     # My class test case
     author = Author(id='')
     author.getAllAlbumIDs()
-    author.saveAlbums()
-    # status = author.getAuthorAlbumIDsByMonth(year='2016', month='05')
-    # print(status)
-
-    # album = Album(id="", authorID="")
-    # album.getAlbumInfo()
-    # album.save()
-    # tag = Tag(name="")
-    # tag.getTagContents()

@@ -4,16 +4,7 @@
 # You must edit the config first.
 #
 
-# MySQL Config
-MYSQLConfig = {
-    'host': '',
-    'user': '',
-    'password': '',
-    'db': ''
-}
-
-
-# ZHIHUGet Config
+# UA Config
 TUCHONGGetConfig = {
     'USER_AGENTS': [
         "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN) AppleWebKit/523.15 (KHTML, like Gecko, Safari/419.3) Arora/0.3 (Change: 287 c9dfb30)",
